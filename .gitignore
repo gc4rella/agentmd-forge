@@ -1,0 +1,18 @@
+.DS_Store
+
+# Python/runtime caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local virtual environments
+.venv/
+venv/
+
+# Local assistant/editor state
+.codex/
+.claude/local/
+.aider*
+!.aider.conf.yml
+.cursor/
+.continue/
