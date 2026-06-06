@@ -21,19 +21,56 @@ The failure mode is never "too few sections." It's bloat, vague rules, duplicate
 ```dot
 digraph {
     "Repo has code?" [shape=diamond];
+    "Initialize wizard" [shape=box];
     "Trust-tier scan (Mode A)" [shape=box];
     "Interview (Mode B)" [shape=box];
     "Draft from template" [shape=box];
     "Validate (optional script)" [shape=box];
     "Done" [shape=doublecircle];
 
-    "Repo has code?" -> "Trust-tier scan (Mode A)" [label="yes"];
-    "Repo has code?" -> "Interview (Mode B)" [label="no / greenfield"];
+    "Repo has code?" -> "Initialize wizard";
+    "Initialize wizard" -> "Trust-tier scan (Mode A)" [label="existing repo"];
+    "Initialize wizard" -> "Interview (Mode B)" [label="greenfield"];
     "Trust-tier scan (Mode A)" -> "Draft from template";
     "Interview (Mode B)" -> "Draft from template";
     "Draft from template" -> "Validate (optional script)";
     "Validate (optional script)" -> "Done";
 }
+```
+
+### Initialize — scan first, then ask
+
+Start with a tiny wizard so the user controls the output shape. For existing repos, inspect the repo
+first, summarize what was detected, then ask only for choices the scan cannot know. Do not ask the
+user to restate commands, paths, or conventions already verified from high-trust files.
+
+Use these choices:
+
+1. **Mode:** derive from this repo; greenfield/empty repo; review or improve existing `AGENTS.md`.
+2. **Scope:** root `AGENTS.md` only; root plus nested files for packages; dry-run/proposal only.
+3. **Archetype:** confirm the detected type: web app, service/API, library, CLI tool, monorepo,
+   research prototype, or other.
+4. **Command policy:** use only verified commands; include uncertain commands marked `UNVERIFIED`;
+   leave unknown commands as TODOs.
+5. **Safety constraints:** ask for human-only rules: protected areas, forbidden actions, secrets/data
+   handling, approval-required changes.
+6. **Definition of done:** confirm whether verification should match CI exactly or include extra
+   local/manual gates such as screenshots, docs, changelog, or migration checks.
+7. **Compatibility:** default to `AGENTS.md` only; offer pointer files such as `CLAUDE.md` only when
+   the user wants them.
+
+Wizard answers add team intent, but verified repo signals still win for commands, paths, and CI
+gates unless the user explicitly says the repo is stale.
+
+Example existing-repo prompt after scanning:
+
+```text
+I found: pnpm monorepo, web app + service, commands from package.json and CI.
+Proposed output: root AGENTS.md + nested files for apps/web and apps/api.
+Before I write it:
+1. Any protected areas besides auth, migrations, infra, and billing?
+2. Should verification match CI exactly, or include local-only checks too?
+3. Do you want compatibility pointer files like CLAUDE.md, or AGENTS.md only?
 ```
 
 ### Mode A — generate from an existing repo (trust-tier scan)
@@ -58,9 +95,9 @@ is uncertain, mark it `# UNVERIFIED — confirm` rather than inventing certainty
 
 ### Mode B — greenfield interview
 
-Ask, one at a time: language/stack; package manager; how to run/build/test; conventions to enforce;
-hard "do not" constraints; what "done" means; deploy target. Then pick the matching `templates/`
-archetype.
+Ask, one at a time: language/stack; package manager; repo type/archetype; how to run/build/test;
+conventions to enforce; hard "do not" constraints; what "done" means; deploy target; compatibility
+pointer files. Then pick the matching `templates/` archetype.
 
 ### Draft
 
