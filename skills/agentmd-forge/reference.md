@@ -1,7 +1,7 @@
 # AGENTS.md reference
 
-Heavy reference for `writing-agents-md`. Load when you need the full section catalog, detection
-tables, adapter matrix, or monorepo rules. The SKILL.md stays tight by pointing here.
+Reference for `agentmd-forge`. Load when you need the full section catalog, detection tables,
+compatibility notes, or monorepo rules. The SKILL.md stays tight by pointing here.
 
 ---
 
@@ -89,9 +89,9 @@ are often the real, authoritative command list. CI is the best source for the *b
 
 ---
 
-## 4. Existing instruction files to merge
+## 4. Existing instruction files to read
 
-If present, read and fold their stable rules into the canonical AGENTS.md (then point them at it):
+If present, read these as inputs and fold their stable rules into the canonical AGENTS.md:
 
 `CLAUDE.md` · `.cursorrules` · `.cursor/rules/*` · `.github/copilot-instructions.md` ·
 `.github/instructions/*.instructions.md` · `GEMINI.md` · `.windsurfrules` · `CONTRIBUTING.md`.
@@ -100,19 +100,19 @@ Keep only stable, repo-level rules. Drop anything task-specific or already in th
 
 ---
 
-## 5. Cross-tool adapter matrix
+## 5. Compatibility notes
 
-Canonical file is `AGENTS.md`. Make everything else reference it — never maintain parallel copies.
+Canonical output is `AGENTS.md`. Do not create other agent instruction files unless the user asks.
+When the user does ask, prefer pointers over parallel copies.
 
 | Tool | Reads | Mechanism |
 |------|-------|-----------|
 | Codex | `AGENTS.md` (+ `AGENTS.override.md`, nested) | native — nothing to do |
 | Cursor, Windsurf, Gemini CLI, Aider, Continue, Amp, Warp, Goose | `AGENTS.md` | native |
-| Claude Code | `CLAUDE.md` | `CLAUDE.md` containing `@AGENTS.md` (import; allows Claude-only notes), or `ln -s AGENTS.md CLAUDE.md` (zero additions) |
-| GitHub Copilot | `AGENTS.md` and/or `.github/copilot-instructions.md` | keep AGENTS.md; optionally emit a Copilot file for chat/review surfaces |
+| Claude Code | `CLAUDE.md` | optional pointer containing `@AGENTS.md`, only when requested |
+| GitHub Copilot | `AGENTS.md` and/or `.github/copilot-instructions.md` | keep AGENTS.md canonical; create Copilot instructions only when requested |
 
-Import vs symlink: use the **import shim** when a tool needs its own extra notes; use the **symlink**
-when the files should be byte-identical. Never copy-paste — copies silently drift.
+Never copy-paste AGENTS.md into another instruction file. Copies silently drift.
 
 ---
 

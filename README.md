@@ -1,53 +1,50 @@
-# agentmdforge
+# AgentMD Forge
 
-Portable skills for coding agents. Each skill is a plain `SKILL.md` folder that works across any
-tool supporting the open [Agent Skills](https://agents.md) format — Claude Code, OpenAI Codex, and
-others.
+AgentMD Forge is a single portable skill for crafting high-signal `AGENTS.md` files. It is packaged
+as a plain `SKILL.md` folder that works across agents that support skills, including OpenAI Codex and
+Claude Code.
 
-## Skills
+## Skill
 
-### `writing-agents-md`
+### `agentmd-forge`
 
-Forges best-in-class **`AGENTS.md`** files — the cross-tool "README for agents." It works in two
-modes: scaffold one for a brand-new project (interview), or derive one from an existing repo
-(trust-tier codebase scan). It encodes the *writing craft* (right altitude, exact commands, negative
-rules, hard-gate verification) distilled from Anthropic's context-engineering guidance, OpenAI's
-Codex docs, and strong real-world files — not just a list of sections. Ships an optional validator.
+Crafts **`AGENTS.md`** files: the repo-level behavioral contract a coding agent should follow. It
+works in two modes: scaffold one for a brand-new project through a short interview, or derive one
+from an existing repo through a trust-tier codebase scan. It focuses on right altitude, exact
+commands, negative rules, and hard-gate verification instead of generic section filling.
 
 ```
-skills/writing-agents-md/
+skills/agentmd-forge/
   SKILL.md                  # the skill (tight core)
-  reference.md              # section catalog, trust-tier + detection tables, adapter matrix, monorepo
-  frontmatter-schema.md     # optional machine-readable frontmatter (default OFF)
+  reference.md              # section catalog, trust-tier tables, compatibility notes, monorepo guidance
   EXAMPLE.md                # one fully worked example
-  templates/                # cli-tool · web-app · library · service · research-prototype · monorepo-root
+  templates/                # AGENTS.md archetypes
   scripts/validate_agents_md.py
 ```
 
 ## Install
 
-Skills are discovered by folder. Symlink (so updates here propagate) or copy each skill into your
-agent's skills directory.
+Symlink the skill folder so updates here propagate, or copy it into your agent's skills directory.
 
 **Claude Code** (`~/.claude/skills/`):
 ```bash
-ln -s "$PWD/skills/writing-agents-md" ~/.claude/skills/writing-agents-md
+ln -s "$PWD/skills/agentmd-forge" ~/.claude/skills/agentmd-forge
 ```
-Invoke with `/writing-agents-md`, or just describe the task — it triggers on its description.
+Invoke with `/agentmd-forge`, or describe the `AGENTS.md` task.
 
 **OpenAI Codex** (`~/.agents/skills/`, also scanned per-repo at `.agents/skills/`):
 ```bash
-ln -s "$PWD/skills/writing-agents-md" ~/.agents/skills/writing-agents-md
+ln -s "$PWD/skills/agentmd-forge" ~/.agents/skills/agentmd-forge
 ```
-Invoke with `$writing-agents-md` or via `/skills`.
+Invoke with `$agentmd-forge` or via `/skills`.
 
-Any other SKILL.md-aware agent can point at the same folder.
+Any other `SKILL.md`-aware agent can point at the same folder.
 
-## Validator (optional)
+## Validator
 
 ```bash
-python skills/writing-agents-md/scripts/validate_agents_md.py AGENTS.md --repo . --json
+python skills/agentmd-forge/scripts/validate_agents_md.py AGENTS.md --repo . --json
 ```
 Checks line/byte budget, required gate sections, secret leaks, and (with `--repo`) that the commands
-and paths it references actually exist. Stdlib-only Python 3.8+; CI-friendly (non-zero exit on
-`--fail-on` codes).
+and paths it references actually exist. It is stdlib-only Python 3.8+ and exists to quality-check
+`AGENTS.md` files produced by the skill.

@@ -31,7 +31,6 @@ MISSING_RECOMMENDED_SECTIONS = "missing_recommended_sections"
 SECRET_LEAK = "secret_leak"
 INVALID_COMMANDS = "invalid_commands"
 INVALID_PATHS = "invalid_paths"
-INVALID_FRONTMATTER = "invalid_frontmatter"
 
 DEFAULT_FAIL_ON = {MISSING_REQUIRED_SECTIONS, SECRET_LEAK, INVALID_COMMANDS}
 
@@ -217,22 +216,6 @@ def check_paths(text: str, repo: Path) -> List[Finding]:
     return out
 
 
-def check_frontmatter(text: str) -> List[Finding]:
-    if not text.startswith("---"):
-        return []
-    end = text.find("\n---", 3)
-    if end == -1:
-        return [Finding(INVALID_FRONTMATTER, "warning", "frontmatter opened with --- but never closed")]
-    block = text[3:end]
-    required_keys = ["schema_version", "name", "purpose", "project_type", "verification"]
-    missing = [k for k in required_keys if not re.search(rf"(?m)^\s*{k}\s*:", block)]
-    if missing:
-        return [Finding(INVALID_FRONTMATTER, "warning",
-                        f"frontmatter present but missing keys: {', '.join(missing)}",
-                        "See frontmatter-schema.md, or remove the block (clean prose is the default).")]
-    return []
-
-
 def validate(agents_path: Path, repo: Optional[Path], max_lines: int, max_bytes: int) -> List[Finding]:
     text = agents_path.read_text(encoding="utf-8")
     headings = parse_headings(text)
@@ -240,7 +223,6 @@ def validate(agents_path: Path, repo: Optional[Path], max_lines: int, max_bytes:
     findings += check_budget(text, max_lines, max_bytes)
     findings += check_sections(headings)
     findings += check_secrets(text)
-    findings += check_frontmatter(text)
     if repo is not None:
         findings += check_commands(text, repo)
         findings += check_paths(text, repo)

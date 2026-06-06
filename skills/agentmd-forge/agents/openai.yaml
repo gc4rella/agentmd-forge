@@ -1,0 +1,4 @@
+interface:
+  display_name: "AgentMD Forge"
+  short_description: "Craft focused AGENTS.md files"
+  default_prompt: "Use $agentmd-forge to create or revise a concise AGENTS.md for this repository."

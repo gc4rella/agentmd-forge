@@ -1,7 +1,7 @@
 # Worked example
 
 A realistic, tight AGENTS.md for a TypeScript/pnpm web app. It shows the principles in action:
-exact commands, a clear repo map, negative rules, a hard-gate definition of done — and nothing the
+exact commands, a clear repo map, negative rules, a hard-gate definition of done, and nothing the
 README already covers. ~70 lines. This is the bar to aim for, not a section checklist to fill.
 
 Everything between the rulers is the file you'd write as `AGENTS.md`.

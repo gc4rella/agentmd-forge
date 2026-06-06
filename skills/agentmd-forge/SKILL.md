@@ -1,31 +1,20 @@
 ---
-name: writing-agents-md
-description: Use when creating, generating, improving, or migrating an AGENTS.md or CLAUDE.md for a repository — scaffolding one for a brand-new project or deriving one from an existing codebase, and making it work across Codex, Claude Code, Copilot, Cursor, and other coding agents.
+name: agentmd-forge
+description: Use when creating, generating, reviewing, or revising an AGENTS.md file for a repository, either by scaffolding one for a new project through a short interview or deriving one from an existing codebase through a grounded scan.
 ---
 
-# Writing AGENTS.md
+# AgentMD Forge
 
 ## Overview
 
-`AGENTS.md` is the cross-tool "README for agents": a predictable, plain-Markdown file at a repo's
-root holding the build commands, conventions, constraints, and verification rules a coding agent
-needs. It is read automatically by Codex, Cursor, Copilot, Gemini CLI, Aider, and others; Claude
-Code reads `CLAUDE.md` and can import `AGENTS.md`.
+Forge a repo's `AGENTS.md`: a concise, plain-Markdown behavioral contract holding the build
+commands, conventions, constraints, and verification rules a coding agent needs.
 
 **Core principle: an AGENTS.md is a behavioral contract, not documentation. Every line must change
 what the agent *does*. If a line doesn't change behavior, delete it.**
 
 The failure mode is never "too few sections." It's bloat, vague rules, duplicated README prose, and
 **guessed commands that don't exist**. A tight, accurate 120-line file beats a 400-line one.
-
-## When to use
-
-- Creating an AGENTS.md for a new project, or generating one from an existing repo.
-- Improving/auditing an existing AGENTS.md or CLAUDE.md.
-- Migrating from `CLAUDE.md` / `.cursorrules` / `copilot-instructions.md` to a shared AGENTS.md.
-
-Not for: per-task notes (those go in the issue/PR/chat, never in AGENTS.md) or content the README
-already covers (link to it instead).
 
 ## Workflow
 
@@ -35,7 +24,6 @@ digraph {
     "Trust-tier scan (Mode A)" [shape=box];
     "Interview (Mode B)" [shape=box];
     "Draft from template" [shape=box];
-    "Wire cross-tool adapters" [shape=box];
     "Validate (optional script)" [shape=box];
     "Done" [shape=doublecircle];
 
@@ -43,8 +31,7 @@ digraph {
     "Repo has code?" -> "Interview (Mode B)" [label="no / greenfield"];
     "Trust-tier scan (Mode A)" -> "Draft from template";
     "Interview (Mode B)" -> "Draft from template";
-    "Draft from template" -> "Wire cross-tool adapters";
-    "Wire cross-tool adapters" -> "Validate (optional script)";
+    "Draft from template" -> "Validate (optional script)";
     "Validate (optional script)" -> "Done";
 }
 ```
@@ -62,17 +49,18 @@ Read signals in trust order; never let lower trust override higher. **Full table
 
 Detect and record: package manager + **exact** commands (install/dev/build/lint/typecheck/test);
 the repo map and high-risk paths (auth, billing, migrations, infra, secrets, generated code);
-conventions from lint/format/type configs; CI gates. Merge any existing `CLAUDE.md`, `.cursorrules`,
-`.github/copilot-instructions.md`.
+conventions from lint/format/type configs; CI gates. Read existing `CLAUDE.md`, `.cursorrules`,
+`.github/copilot-instructions.md`, and similar agent-instruction files as inputs only. Fold stable,
+repo-level rules into `AGENTS.md`; do not maintain parallel copies.
 
 **IRON RULE: write only commands and paths you verified exist. Never guess a command.** If a command
 is uncertain, mark it `# UNVERIFIED — confirm` rather than inventing certainty.
 
 ### Mode B — greenfield interview
 
-Ask, one at a time: language/stack · package manager · how to run/build/test · conventions to
-enforce · hard "do not" constraints · what "done" means · deploy target. Then pick the matching
-`templates/` archetype.
+Ask, one at a time: language/stack; package manager; how to run/build/test; conventions to enforce;
+hard "do not" constraints; what "done" means; deploy target. Then pick the matching `templates/`
+archetype.
 
 ### Draft
 
@@ -93,22 +81,19 @@ this is the part most files get wrong:
 8. **Don't duplicate the README.** Link to it.
 9. **Stable rules only.** No session notes, no per-task logs, no changelog chatter in the file.
 
-Section catalog and per-section guidance: `reference.md`. Optional machine-readable frontmatter:
-`frontmatter-schema.md` (default OFF — clean prose is the default).
+Section catalog and per-section guidance: `reference.md`. Keep clean prose as the default; do not add
+frontmatter unless the user explicitly asks for machine-readable metadata.
 
-### Wire cross-tool adapters
+### Optional compatibility notes
 
-Keep `AGENTS.md` canonical; make every other tool point at it (never copy-paste — copies drift):
+`AGENTS.md` is canonical. If the repo already has other agent instruction files, treat them as inputs.
+After producing `AGENTS.md`, mention that the user may replace a duplicate `CLAUDE.md` with:
 
-- **Claude Code** — create `CLAUDE.md` that imports it (Anthropic-official), optionally with
-  Claude-only notes below:
-  ```md
-  @AGENTS.md
-  ```
-  Or, if you need zero additions: `ln -s AGENTS.md CLAUDE.md`.
-- **Copilot (optional)** — `.github/copilot-instructions.md` for chat/review parity.
+```md
+@AGENTS.md
+```
 
-Adapter matrix and monorepo/nested guidance: `reference.md`.
+Do not create adapter files unless the user asks for them.
 
 ### Validate (optional)
 
@@ -136,4 +121,4 @@ For rules that must always hold, **back them with enforcement** (lint/CI/hooks):
 | No definition of done | Add explicit hard-gate verification commands |
 | Secrets quoted from `.env` | Redact; reference the variable name only |
 | Session notes / task logs in the file | Keep those in the issue/PR/chat |
-| Copy-pasted CLAUDE.md / .cursorrules | Make them point at AGENTS.md |
+| Copy-pasted CLAUDE.md / .cursorrules | Fold stable rules into AGENTS.md; suggest a pointer file only if asked |
