@@ -37,28 +37,32 @@ web apps.
 
 ## Install
 
-Symlink the skill folder when you want local edits in this repo to propagate automatically. Copy it if
-you want a fixed snapshot.
-
-For OpenAI Codex:
+Install from GitHub with the Skills CLI:
 
 ```bash
-mkdir -p ~/.agents/skills
-ln -s "$PWD/skills/agentmd-forge" ~/.agents/skills/agentmd-forge
+npx --yes skills add gc4rella/agentmd-forge --skill agentmd-forge -g -y
 ```
 
-Invoke it with `$agentmd-forge` or through your skills UI.
-
-For Claude Code:
+Preview the skill without installing:
 
 ```bash
-mkdir -p ~/.claude/skills
-ln -s "$PWD/skills/agentmd-forge" ~/.claude/skills/agentmd-forge
+npx --yes skills add gc4rella/agentmd-forge --list
 ```
 
-Invoke it with `/agentmd-forge`, or ask Claude Code to create or improve an `AGENTS.md` file.
+Install from a local checkout while developing:
 
-Any `SKILL.md`-aware agent can use the same `skills/agentmd-forge` folder.
+```bash
+npx --yes skills add . --skill agentmd-forge -g -y
+```
+
+Target specific agents when needed:
+
+```bash
+npx --yes skills add gc4rella/agentmd-forge --skill agentmd-forge -a codex -a claude-code -g -y
+```
+
+Invoke it as `agentmd-forge` through your agent's skills UI, or ask the agent to use
+`agentmd-forge` to create or improve an `AGENTS.md` file.
 
 ## Typical Usage
 
